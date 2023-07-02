@@ -1,0 +1,32 @@
+[
+    {
+      "question": "What is the capital of France?",
+      "options": ["Paris", "London", "Berlin", "Madrid"],
+      "correctAnswer": "Paris"
+    },
+    {
+      "question": "Who painted the Mona Lisa?",
+      "options": ["Van Gogh", "Picasso", "Leonardo da Vinci", "Rembrandt"],
+      "correctAnswer": "Leonardo da Vinci"
+    },
+    {
+        "question": "ABCD",
+        "options": ["A", "B", "C", "D"],
+        "correctAnswer": "A"
+    },
+    {
+        "question": "PQRS",
+        "options": ["P", "Q", "R", "S"],
+        "correctAnswer": "P"
+    },
+    {
+        "question": "UVWX",
+        "options": ["U", "V", "W", "X"],
+        "correctAnswer": "U"
+    },
+    {
+        "question": "Option1",
+        "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+        "correctAnswer": "Option 1"
+    }
+]
