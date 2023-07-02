@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { Toaster , toast } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 // Game Timer Component
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
@@ -8,26 +10,32 @@ import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import Questions from "../Data/Questions.json";
 
 const Game = () => {
+
+  // Declarations & Definitions
+  const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [shuffledOptions, setShuffledOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [correctOption, setCorrectOption] = useState(null);
-  const [optionBtn, setOptionBtn] = useState(false)
+  const [optionBtn, setOptionBtn] = useState(false);
   const [progress, setProgress] = useState(0);
   const [nextBtn, setNextBtn] = useState(true);
+  const [playing, setPlaying] = useState(true);
 
   // Fetching data from json file and setting it at every time the game screen loads
   useEffect(() => {
     setQuestions(Questions);
   }, []);
 
+  // Below useEffect shuffles the options everytime screen loads i.e. at question change
   useEffect(() => {
     if (questions.length > 0) {
       shuffleOptions();
     }
   }, [currentQuestionIndex, questions]);
 
+  // Below useEffect sets the progress in progress bar everytime screen loads i.e. at question change
   useEffect(() => {
     if (questions.length > 0) {
       const currentProgress =
@@ -36,6 +44,7 @@ const Game = () => {
     }
   }, [currentQuestionIndex, questions]);
 
+  // Below Function Shuffle the Options
   const shuffleOptions = () => {
     const currentQuestion = questions[currentQuestionIndex];
     const options = [...currentQuestion.options];
@@ -46,36 +55,87 @@ const Game = () => {
     setShuffledOptions(options);
   };
 
+  // Below Function Handles all the Option Clicks (Contains Main Logic of Quiz Game)
   const handleOptionClick = (option) => {
-    // const optionClicked = document.querySelector(".game-option-btn");
     const currentQuestion = questions[currentQuestionIndex];
     setSelectedOption(option);
-    setOptionBtn(true)
-    if (option === currentQuestion.correctAnswer) {
-      // Correct answer logic
-      toast.success('Correct Answer')
-      setCorrectOption(option);
+    setOptionBtn(true);
+    setCorrectOption(currentQuestion.correctAnswer);
+    if (currentQuestionIndex + 1 < questions.length) {
+      if (option === currentQuestion.correctAnswer) {
+        // Correct answer logic
+        toast.success("Correct Answer");
+        setCorrectOption(option);
+      } else {
+        // Incorrect answer logic
+        toast.error("Incorrect Answer");
+      }
     } else {
-      // Incorrect answer logic
-      setCorrectOption(currentQuestion.correctAnswer);
-      toast.error("Incorrect Answer")
+      setPlaying(false);
+      Swal.fire({
+        // icon: "error",
+        allowOutsideClick: false,
+        title: "Game Completed",
+        text: "Redirecting to Summary...",
+        timer: 2500,
+        showConfirmButton: false,
+      }).then(() => {
+        navigate("/summary");
+      });
     }
     setNextBtn(false);
   };
 
   const handleNextQuestion = () => {
     setNextBtn(true);
-    setOptionBtn(false)
+    setOptionBtn(false);
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       // Game over logic
-      alert("Game over!");
+      setPlaying(false);
+      // alert("Game over!");
     }
   };
 
+  // Below Function Deals after the timer is complete
+  const timerComplete = () => {
+    // navigate("/summary")
+    Swal.fire({
+      allowOutsideClick: false,
+      title: "Time's Up!",
+      iconHtml:
+        '<i class="fa-solid fa-hourglass-end fa-shake" style="color: #000000;"></i>',
+      showCancelButton: false,
+      showConfirmButton: false,
+      text: "Redirecting to summary page...",
+      timer: 2000,
+    }).then(() => {
+      navigate("/summary");
+    });
+  };
+
+  // Below function handles the Pause Click
+  const handlePause = () => {
+    setPlaying(false);
+    Swal.fire({
+      allowOutsideClick: false,
+      title: "Game Paused!",
+      iconHtml: '<i class="fa-solid fa-pause" style="color: #000000;"></i>',
+      showDenyButton: true,
+      confirmButtonText: "Resume",
+      denyButtonText: `Quit`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        setPlaying(true);
+      } else if (result.isDenied) {
+      }
+    });
+  };
+
   if (questions.length === 0) {
-    return <div>Loading...</div>;
+    return <></>;
   }
 
   const currentQuestion = questions[currentQuestionIndex];
@@ -85,8 +145,9 @@ const Game = () => {
       <div>
         <Toaster position="bottom-right" reverseOrder={false} />
       </div>
+      {/* Game Navbar Starts */}
       <div className="game-nav">
-        <button className="pause-btn">
+        <button onClick={() => handlePause()} className="pause-btn">
           <i className="fa-solid fa-pause"></i>
         </button>
         <h1 className="game-title">Quiz</h1>
@@ -95,11 +156,11 @@ const Game = () => {
             strokeLinecap={"round"}
             size={50}
             strokeWidth={5}
-            isPlaying={true}
-            duration={15}
+            isPlaying={playing}
+            duration={60}
             trailColor="#502F1A"
             colors="#E8852A"
-            // onComplete={() =>}
+            onComplete={() => timerComplete()}
           >
             {({ remainingTime }) => (
               <h1 className="game-timer-count">{remainingTime}</h1>
@@ -107,6 +168,9 @@ const Game = () => {
           </CountdownCircleTimer>
         </div>
       </div>
+      {/* Game Navbar Ends */}
+      
+      {/* Game Progress Bar Starts */}
       <div className="game-progress">
         <div className="progress-bar">
           <div
@@ -120,6 +184,9 @@ const Game = () => {
           </p>
         </div>
       </div>
+      {/* Game Progress Bar Ends */}
+
+      {/* Game Main Starts */}
       <div className="game-main">
         <div className="game-question">
           <h3>{currentQuestion.question}</h3>
@@ -155,6 +222,7 @@ const Game = () => {
           </button>
         </div>
       </div>
+      {/* Game Main Ends */}
     </div>
   );
 };
