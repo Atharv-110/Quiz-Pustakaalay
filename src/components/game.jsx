@@ -10,7 +10,6 @@ import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import Questions from "../Data/Questions.json";
 
 const Game = () => {
-
   // Declarations & Definitions
   const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
@@ -169,7 +168,7 @@ const Game = () => {
         </div>
       </div>
       {/* Game Navbar Ends */}
-      
+
       {/* Game Progress Bar Starts */}
       <div className="game-progress">
         <div className="progress-bar">
