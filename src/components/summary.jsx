@@ -32,7 +32,7 @@ export default function Summary() {
           You Can Improve your skill, <br />
           Keep practicing it in the higher level
         </p>
-        <button onClick={() => navigate(-1)}>Back to game</button>
+        <button onClick={() => navigate("/")}>Back to game</button>
       </div>
     </div>
   );

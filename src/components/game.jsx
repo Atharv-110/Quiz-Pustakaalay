@@ -63,11 +63,29 @@ const Game = () => {
     if (currentQuestionIndex + 1 < questions.length) {
       if (option === currentQuestion.correctAnswer) {
         // Correct answer logic
-        toast.success("Correct Answer");
+        setPlaying(false);
+        Swal.fire({
+          allowOutsideClick:false,
+          icon: "success",
+          title: "Right",
+          timer: 1500,
+          showConfirmButton: false,
+        }).then(() => {
+          setPlaying(true);
+        });
         setCorrectOption(option);
       } else {
         // Incorrect answer logic
-        toast.error("Incorrect Answer");
+        setPlaying(false);
+        Swal.fire({
+          allowOutsideClick:false,
+          icon: "error",
+          title: "Wrong",
+          timer: 1500,
+          showConfirmButton: false,
+        }).then(() => {
+          setPlaying(true);
+        });
       }
     } else {
       setPlaying(false);
@@ -141,9 +159,6 @@ const Game = () => {
 
   return (
     <div className="game">
-      <div>
-        <Toaster position="bottom-right" reverseOrder={false} />
-      </div>
       {/* Game Navbar Starts */}
       <div className="game-nav">
         <button onClick={() => handlePause()} className="pause-btn">
